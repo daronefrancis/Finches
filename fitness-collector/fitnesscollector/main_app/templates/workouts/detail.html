@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Workouts Details</h1>
+
+    <div class="card">
+        <div class="card-content">
+        <span class="card-title">{{ workout.name }}</span>
+        <p>Focus: {{ workout.focus }}</p>
+        <p>Difficulty: {{ workout.difficulty }}</p>
+        <p>Description: {{ workout.description }}</p>
+        {% if workout.duration > 30 %}
+            <p>This is a long Workout</p>
+        {% else %}
+            <p>This is a short workout</p>
+        {% endif %}
+        <p>Duration: {{ workout.duration }} minutes</p>
+        </div>
+    </div>
+
+{% endblock %}
