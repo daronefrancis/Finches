@@ -35,6 +35,7 @@ class Workout(models.Model):
 
   def get_absolute_url(self):
     return reverse('detail', kwargs={'workout_id': self.id})
+    
 
   def exercised_for_today(self):
     counting = 0

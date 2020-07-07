@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Workouts Details</h1>
+<h1>Workout Details</h1>
 
 <div class="row">
     <div class="col s6">
@@ -16,84 +16,84 @@
                 {% else %}
                     <p>This is a short workout</p>
                 {% endif %}
-            <p>Duration: {{ workout.duration }} minutes</p>
+                <p>Duration: {{ workout.duration }} minutes</p>
             </div>
             <div class="card-action">
                 <a href="{% url 'workouts_update' workout.id %}">Edit</a>
                 <a href="{% url 'workouts_delete' workout.id %}">Delete</a>
             </div>
         </div>
-    </div>    
+    </div>
     <div class="col s6">
         <form action="{% url 'exercised' workout.id %}" method="post">
             {% csrf_token %}
             {{ exercise_form.as_p }}
             <input type="submit" class="btn" value="Add Workout">
         </form>
-
         <br>
         {% if workout.exercised_for_today %}
-          <div class="card-panel teal-text center-align"> You have exercised enough today. Anything else is above and beyond!</div>
+            <div class="card-panel teal-text center-align">You have exercised enough today. Anything else is above and beyond!</div>
         {% else %}
-          <div class="card-panel red-text center-align">You have not exercised yet today!</div>
+            <div class="card-panel red-text center-align">You have not exercised yet today!</div>
         {% endif %}
-
         <table class="striped">
-        <thead>
-            <tr><th>Date</th><th>Body Part</th></tr>
-        </thead>
-        <tbody>
-            {% for exercise in workout.exercise_set.all %}
-            <tr>
-                <td>{{exercise.date}}</td>
-                <td>{{exercise.get_body_part_display}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+            <thead>
+                <tr><th>Date</th><th>Body Part</th></tr>
+            </thead>
+                <tbody>
+                    {% for exercise in workout.exercise_set.all %}
+                    <tr>
+                        <td>{{exercise.date}}</td>
+                        <td>{{exercise.get_body_part_display}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
         </table>
     </div>
 </div>
 <hr>
 <div class="row">
-  <div class="col s6">
-    <h3>{{ workout.name }} needs these pieces of equipment</h3>
-    {% if workout.equipment.count %}
-      {% for item in workout.equipment.all %}
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">
-              <span style="color: {{ equipment.color }}">{{ equipment.color }}</span> {{ equipment.name }}
-            </span>
-          </div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <h5>This workout doesn't need any equipment</h5>
-    {% endif %}
-  </div>
-  <div class="col s6">
+    <div class="col s6">
+        <h3>{{ workout.name }}'s Equipment</h3>
+        {% if workout.equipment.count %}
+        {% for item in workout.equipment.all %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">
+                        <span style="color: {{ item.color }} ">{{ item.color }}</span> {{ item.name }}
+                    </span>
+                </div>
+            </div>
+        {% endfor %}
+        {% else %}
+        <h5>No Equipment :(</h5>
+        {% endif %}
+    </div>
+  <!-- Available equipment will come after this line -->
+    <div class="col s6">
     <h3>Available Equipment</h3>
     {% if equipment.count %}
-      {% for item in equipment.all %}
+        {% for item in equipment.all %}
         <div class="card">
-          <div class="card-content">
-            <span class="card-title">
-              <span style="color: {{ equipment.color }}">{{ equipment.color }}</span> {{ equipment.name }}
-            </span>
-          </div>
-          <div class="card-action">
-            <form action="{% url 'assoc_equipment' workout.id equipment.id %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="btn">Add</button>
-            </form>
-          </div>
+            <div class="card-content">
+                <span class="card-title">
+                    <span style="color: {{ item.color }}">{{ item.color }}</span> {{ item.name }}
+                </span>
+            </div>
+            <div class="card-action">
+                <!-- <form action="{% url 'assoc_equipment' workout.id equipment.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Add</button>
+                </form> -->
+            </div>
         </div>
-      {% endfor %}
+        {% endfor %}
     {% else %}
-      <h5>No more available equipment</h5>
+        <h5>{{workout.name}} Already Has All Equipment Available</h5>
     {% endif %}
+    </div>
 </div>
-</div>
+<!-- JS to create a date picker and init the meal dropdown -->
 <script>
     var dateEl = document.getElementById('id_date');
     M.Datepicker.init(dateEl, {

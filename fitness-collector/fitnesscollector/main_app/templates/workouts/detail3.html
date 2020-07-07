@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Workouts Details</h1>
+
+<div class="row">
+    <div class="col s6">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">{{ workout.name }}</span>
+                <p>Focus: {{ workout.focus }}</p>
+                <p>Difficulty: {{ workout.difficulty }}</p>
+                <p>Description: {{ workout.description }}</p>
+                {% if workout.duration > 30 %}
+                    <p>This is a long workout</p>
+                {% else %}
+                    <p>This is a short workout</p>
+                {% endif %}
+            <p>Duration: {{ workout.duration }} minutes</p>
+            </div>
+            <div class="card-action">
+                <a href="{% url 'workouts_update' workout.id %}">Edit</a>
+                <a href="{% url 'workouts_delete' workout.id %}">Delete</a>
+            </div>
+        </div>
+    </div>    
+    <div class="col s6">
+        <form action="{% url 'exercised' workout.id %}" method="post">
+            {% csrf_token %}
+            {{ exercise_form.as_p }}
+            <input type="submit" class="btn" value="Add Workout">
+        </form>
+
+        <br>
+        {% if workout.exercised_for_today %}
+          <div class="card-panel teal-text center-align"> You have exercised enough today. Anything else is above and beyond!</div>
+        {% else %}
+          <div class="card-panel red-text center-align">You have not exercised yet today!</div>
+        {% endif %}
+
+        <table class="striped">
+        <thead>
+            <tr><th>Date</th><th>Body Part</th></tr>
+        </thead>
+        <tbody>
+            {% for exercise in workout.exercise_set.all %}
+            <tr>
+                <td>{{exercise.date}}</td>
+                <td>{{exercise.get_body_part_display}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col s6">
+    <h3>{{ workout.name }} needs these pieces of equipment</h3>
+    {% if workout.equipment.count %}
+      {% for item in workout.equipment.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              <span style="color: {{ equipment.color }}">{{ item.color }}</span> {{ item.name }}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>This workout doesn't need any equipment</h5>
+    {% endif %}
+  </div>
+  <div class="col s6">
+    <h3>Available Equipment</h3>
+    {% if equipment.count %}
+      {% for item in equipment.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              <span style="color: {{ equipment.color }}">{{ item.color }}</span> {{ item.name }}
+            </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'assoc_equipment' workout.id equipment.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn">Add</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>No more available equipment</h5>
+    {% endif %}
+</div>
+</div>
+<script>
+    var dateEl = document.getElementById('id_date');
+    M.Datepicker.init(dateEl, {
+      format: 'yyyy-mm-dd',
+      defaultDate: new Date(),
+      setDefaultDate: true,
+      autoClose: true
+    });
+
+    var selectEl = document.getElementById('id_body_part');
+    M.FormSelect.init(selectEl);
+</script>
+{% endblock %}
